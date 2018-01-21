@@ -124,7 +124,7 @@ public class TransactionLog {
     }
 
     public static void main(String[] args) {
-        LogFormat logFormat = new LogFormat(Util.fromHexString("9f 02 06 9f 27 01 9f 1a 02 5f 2a 02 9a 03 9c 01"));
+        LogFormat logFormat = new LogFormat(null, Util.fromHexString("9f 02 06 9f 27 01 9f 1a 02 5f 2a 02 9a 03 9c 01"));
         TransactionLog tl = new TransactionLog(logFormat);
         tl.addRecord(Util.fromHexString("00 00 00 00 38 70 40 02 50 09 78 12 04 21 00"));
         tl.addRecord(Util.fromHexString("00 00 00 00 21 90 40 02 50 09 78 12 04 17 00"));

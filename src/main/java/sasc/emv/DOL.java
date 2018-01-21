@@ -82,10 +82,10 @@ public class DOL {
     private Type type;
     private List<TagAndLength> tagAndLengthList = new ArrayList<TagAndLength>();
 
-    public DOL(Type type, byte[] data){
+    public DOL(Type type, EMVIssuerAID ia, byte[] data){
         //Parse tags and lengths
         this.type = type;
-        this.tagAndLengthList = TLVUtil.parseTagAndLength(data);
+        this.tagAndLengthList = TLVUtil.parseTagAndLength(ia, data);
     }
 
     public List<TagAndLength> getTagAndLengthList(){

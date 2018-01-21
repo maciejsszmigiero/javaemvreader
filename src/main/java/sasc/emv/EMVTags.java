@@ -238,10 +238,10 @@ public class EMVTags {
         return tag;
     }
     
-    public static Tag getNotNull(EMVApplication app, Tag tag) {
-        Tag tagFound = get(app, tag);
+    public static Tag getNotNull(EMVIssuerAID ia, byte[] tagBytes) {
+        Tag tagFound = get(ia, tagBytes);
         if (tagFound == null) {
-            tagFound = createUnknownTag(tag.getTagBytes());
+            tagFound = createUnknownTag(tagBytes);
         }
         return tagFound;
     }
@@ -335,21 +335,21 @@ public class EMVTags {
         paymentSystemTags.put(tagBytesWrapped, tag);
     }
     
-    public static Tag get(EMVApplication app, Tag tag){
-        ByteArrayWrapper tagBytesWrapped = ByteArrayWrapper.wrapperAround(tag.getTagBytes());
-        IssuerIdentificationNumber iin = app.getIssuerIdentificationNumber();
+    public static Tag get(EMVIssuerAID ia, byte[] tagBytes){
+        ByteArrayWrapper tagBytesWrapped = ByteArrayWrapper.wrapperAround(tagBytes);
+        IssuerIdentificationNumber iin = ia.getIssuerIdentificationNumber();
         if(iin != null){
             if(issuerToTagsMap.containsKey(iin) && issuerToTagsMap.get(iin).containsKey(tagBytesWrapped)){
                 return issuerToTagsMap.get(iin).get(tagBytesWrapped);
             }
         }
-        if(app.getAID() != null) {
-            ByteArrayWrapper ridBytesWrapped = ByteArrayWrapper.wrapperAround(app.getAID().getRIDBytes());
+        if(ia.getAID() != null) {
+            ByteArrayWrapper ridBytesWrapped = ByteArrayWrapper.wrapperAround(ia.getAID().getRIDBytes());
             if(paymentSystemToTagsMap.containsKey(ridBytesWrapped) && paymentSystemToTagsMap.get(ridBytesWrapped).containsKey(tagBytesWrapped)){
                     return paymentSystemToTagsMap.get(ridBytesWrapped).get(tagBytesWrapped);
             }
         }
-        return find(tag.getTagBytes());
+        return find(tagBytes);
     }
 
     public static void main(String[] args) {

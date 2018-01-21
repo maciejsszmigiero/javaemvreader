@@ -19,7 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import sasc.emv.EMVApplication;
+import sasc.emv.EMVIssuerAID;
 import sasc.emv.EMVTags;
 import static sasc.iso7816.TagValueType.BINARY;
 import static sasc.iso7816.TagValueType.DOL;
@@ -34,17 +34,17 @@ import sasc.util.Util;
  * @author sasc
  */
 public class TLVUtil {
-    
-    private static Tag searchTagById(byte[] tagIdBytes) {
-        return EMVTags.getNotNull(tagIdBytes); //TODO take app (IIN or RID) into consideration
+    private static Tag searchTagById(EMVIssuerAID ia, byte[] tagIdBytes) {
+        return ia != null ? EMVTags.getNotNull(ia, tagIdBytes) :
+                            EMVTags.getNotNull(tagIdBytes);
     }
-    
-    private static Tag searchTagById(ByteArrayInputStream stream){
-        return searchTagById(TLVUtil.readTagIdBytes(stream));
+
+    private static Tag searchTagById(EMVIssuerAID ia, ByteArrayInputStream stream){
+        return searchTagById(ia, TLVUtil.readTagIdBytes(stream));
     }
-    
+
     //This is just a list of Tag And Lengths (eg DOLs)
-    public static String getFormattedTagAndLength(byte[] data, int indentLength) {
+    public static String getFormattedTagAndLength(EMVIssuerAID ia, byte[] data, int indentLength) {
         StringBuilder buf = new StringBuilder();
         String indent = Util.getSpaces(indentLength);
         ByteArrayInputStream stream = new ByteArrayInputStream(data);
@@ -58,7 +58,7 @@ public class TLVUtil {
             }
             buf.append(indent);
 
-            Tag tag = searchTagById(stream);
+            Tag tag = searchTagById(ia, stream);
             int length = TLVUtil.readTagLength(stream);
 
             buf.append(Util.prettyPrintHex(tag.getTagBytes()));
@@ -68,6 +68,10 @@ public class TLVUtil {
             buf.append(tag.getName());
         }
         return buf.toString();
+    }
+
+    public static String getFormattedTagAndLength(byte[] data, int indentLength) {
+        return getFormattedTagAndLength(null, data, indentLength);
     }
 
     public static byte[] readTagIdBytes(ByteArrayInputStream stream) {
@@ -128,8 +132,8 @@ public class TLVUtil {
         }
         return length;
     }
-    
-    public static BERTLV getNextTLV(ByteArrayInputStream stream) {
+
+    public static BERTLV getNextTLV(EMVIssuerAID ia, ByteArrayInputStream stream) {
         if (stream.available() < 2) {
             throw new TLVException("Error parsing data. Available bytes < 2 . Length=" + stream.available());
         }
@@ -179,7 +183,7 @@ public class TLVUtil {
 
         byte[] valueBytes;
 
-        Tag tag = searchTagById(tagIdBytes);
+        Tag tag = searchTagById(ia, tagIdBytes);
 
         // Find VALUE bytes
         if (rawLength == 128) { // 1000 0000
@@ -231,6 +235,10 @@ public class TLVUtil {
         return tlv;
     }
 
+    public static BERTLV getNextTLV(ByteArrayInputStream stream) {
+        return getNextTLV(null, stream);
+    }
+
     private static String getTagValueAsString(Tag tag, byte[] value) {
         StringBuilder buf = new StringBuilder();
 
@@ -257,7 +265,7 @@ public class TLVUtil {
         return buf.toString();
     }
 
-    public static List<TagAndLength> parseTagAndLength(byte[] data) {
+    public static List<TagAndLength> parseTagAndLength(EMVIssuerAID ia, byte[] data) {
         ByteArrayInputStream stream = new ByteArrayInputStream(data);
         List<TagAndLength> tagAndLengthList = new ArrayList<TagAndLength>();
 
@@ -268,11 +276,15 @@ public class TLVUtil {
             byte[] tagIdBytes = TLVUtil.readTagIdBytes(stream);
             int tagValueLength = TLVUtil.readTagLength(stream);
 
-            Tag tag = searchTagById(tagIdBytes);
+            Tag tag = searchTagById(ia, tagIdBytes);
 
             tagAndLengthList.add(new TagAndLength(tag, tagValueLength));
         }
         return tagAndLengthList;
+    }
+
+    public static List<TagAndLength> parseTagAndLength(byte[] data) {
+        return parseTagAndLength(null, data);
     }
 
     public static String prettyPrintAPDUResponse(byte[] data) {

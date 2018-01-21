@@ -32,8 +32,8 @@ public class LogFormat {
     private List<TagAndLength> formatList;
     private int recordLength = 0;
 
-    public LogFormat(byte[] formatBytes){
-        this.formatList = TLVUtil.parseTagAndLength(formatBytes);
+    public LogFormat(EMVIssuerAID ia, byte[] formatBytes){
+        this.formatList = TLVUtil.parseTagAndLength(ia, formatBytes);
         for(TagAndLength tal : formatList){
             recordLength+=tal.getLength();
         }

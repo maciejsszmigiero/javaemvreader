@@ -1062,7 +1062,7 @@ public class EMVSession {
         SW2 = (byte) getDataATCResponse.getSW2();
 
         if (SW1 == (byte) 0x90 && SW2 == (byte) 0x00) {
-            BERTLV tlv = TLVUtil.getNextTLV(new ByteArrayInputStream(getDataATCResponse.getData()));
+            BERTLV tlv = TLVUtil.getNextTLV(new EMVIssuerAIDApp(app), new ByteArrayInputStream(getDataATCResponse.getData()));
             app.setATC(Util.byteToInt(tlv.getValueBytes()[0], tlv.getValueBytes()[1]));
         }
 
@@ -1074,7 +1074,7 @@ public class EMVSession {
         SW2 = (byte) getDataLastOnlineATCRegisterResponse.getSW2();
 
         if (SW1 == (byte) 0x90 && SW2 == (byte) 0x00) {
-            BERTLV tlv = TLVUtil.getNextTLV(new ByteArrayInputStream(getDataLastOnlineATCRegisterResponse.getData()));
+            BERTLV tlv = TLVUtil.getNextTLV(new EMVIssuerAIDApp(app), new ByteArrayInputStream(getDataLastOnlineATCRegisterResponse.getData()));
             app.setLastOnlineATC(Util.byteToInt(tlv.getValueBytes()[0],
                     tlv.getValueBytes()[1]));
         }
@@ -1212,7 +1212,7 @@ public class EMVSession {
         SW2 = (byte) getDataPINTryCounterResponse.getSW2();
 
         if (SW1 == (byte) 0x90 && SW2 == (byte) 0x00) {
-            BERTLV tlv = TLVUtil.getNextTLV(new ByteArrayInputStream(getDataPINTryCounterResponse.getData()));
+            BERTLV tlv = TLVUtil.getNextTLV(new EMVIssuerAIDApp(app), new ByteArrayInputStream(getDataPINTryCounterResponse.getData()));
             app.setPINTryCounter(tlv.getValueBytes()[0]);
         } else {
             app.setPINTryCounter(-2);
@@ -1434,8 +1434,8 @@ public class EMVSession {
         SW2 = (byte) getDataLogFormatResponse.getSW2();
 
         if (SW1 == (byte) 0x90 && SW2 == (byte) 0x00) {
-            BERTLV tlv = TLVUtil.getNextTLV(new ByteArrayInputStream(getDataLogFormatResponse.getData()));
-            app.setLogFormat(new LogFormat(tlv.getValueBytes()));
+            BERTLV tlv = TLVUtil.getNextTLV(new EMVIssuerAIDApp(app), new ByteArrayInputStream(getDataLogFormatResponse.getData()));
+            app.setLogFormat(new LogFormat(new EMVIssuerAIDApp(app), tlv.getValueBytes()));
 
             //Log Entry data element should be located in the FCI Issuer Discretionary Data
             //If it is not, then the app does not support transaction logging.

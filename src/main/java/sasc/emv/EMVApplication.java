@@ -623,7 +623,7 @@ public class EMVApplication implements Application {
                     //data field of the response to the READ RECORD command (excluding SW1 SW2) is included.
 
                     //Get the 'valueBytes'
-                    BERTLV tlv = TLVUtil.getNextTLV(new ByteArrayInputStream(fileRawData));
+                    BERTLV tlv = TLVUtil.getNextTLV(new EMVIssuerAIDApp(this), new ByteArrayInputStream(fileRawData));
                     stream.write(tlv.getValueBytes(), 0, tlv.getValueBytes().length);
                 } else {
                     //For files with SFI in the range 11 to 30, the record tag ('70') and the record length
