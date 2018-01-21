@@ -1,5 +1,7 @@
 changelog
 
+This file is obsolete - please refer to project's Git history instead.
+
 v0.6.1
 Port to Git
 Enhancements to CVRule, EMVTerminal and new class CVMResults (based on patch by Brave)
