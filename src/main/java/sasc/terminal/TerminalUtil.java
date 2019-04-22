@@ -53,14 +53,14 @@ public class TerminalUtil {
             }
             Log.info("Please insert a Smart Card into any attached reader.");
             try {
-				switch(state){
-					case CARD_INSERTED:
-                		cardConnection = terminalProvider.connectAnyTerminal(); //Waits for card inserted
-                		break;
-                    case CARD_PRESENT:
-                        cardConnection = terminalProvider.connectAnyTerminalWithCardPresent("*");
-                        break;
-				}
+		switch(state) {
+		case CARD_INSERTED:
+			cardConnection = terminalProvider.connectAnyTerminal(); //Waits for card inserted
+			break;
+		case CARD_PRESENT:
+			cardConnection = terminalProvider.connectAnyTerminalWithCardPresent("*");
+			break;
+		}
 
                 break; // Outer while
             } catch (NoTerminalsAvailableException ntex) {
